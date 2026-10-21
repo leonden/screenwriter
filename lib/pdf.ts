@@ -8,7 +8,6 @@ const MARGIN_TOP = 72       // 1"
 const MARGIN_BOTTOM = 72    // 1"
 const MARGIN_LEFT = 108     // 1.5"
 const MARGIN_RIGHT = 72     // 1"
-const USABLE_W = PAGE_W - MARGIN_LEFT - MARGIN_RIGHT  // 432pt
 const LINE_H = 12           // 12pt line height (Courier 12pt)
 const FONT_SIZE = 12
 

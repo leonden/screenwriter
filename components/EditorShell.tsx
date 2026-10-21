@@ -28,11 +28,16 @@ export default function EditorShell() {
   const [isSaved, setIsSaved] = useState(true);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Mark unsaved and update store together so no setState happens inside the effect
+  const setStoreDirty = useCallback((updater: (prev: ScriptsStore) => ScriptsStore) => {
+    setIsSaved(false);
+    setStore(updater);
+  }, []);
+
   // Persist to localStorage whenever store changes (debounced)
   useEffect(() => {
     if (store.scripts.length === 0) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    setIsSaved(false);
     saveTimer.current = setTimeout(() => {
       saveStore(store);
       setIsSaved(true);
@@ -45,18 +50,18 @@ export default function EditorShell() {
   const tokens = useMemo(() => parseFountain(content), [content]);
 
   const handleContentChange = useCallback((value: string) => {
-    setStore((prev) => {
+    setStoreDirty((prev) => {
       if (!prev.activeScriptId) return prev;
       return updateScript(prev, prev.activeScriptId, { content: value });
     });
-  }, []);
+  }, [setStoreDirty]);
 
   const handleNameChange = useCallback((name: string) => {
-    setStore((prev) => {
+    setStoreDirty((prev) => {
       if (!prev.activeScriptId) return prev;
       return updateScript(prev, prev.activeScriptId, { name });
     });
-  }, []);
+  }, [setStoreDirty]);
 
   const handleNew = useCallback(() => {
     setStore((prev) => {
